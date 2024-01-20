@@ -28,8 +28,9 @@ const sheetXLSXToJsonHandler = (filePath) => {
 }
 
 const MRRHandler = (data) => {
-  let totalUsersActived = 0
+  /* let totalUsersActived = 0
 
+  
   data.map((user, i) => {  
     if(user.status === 'Ativa'){
       totalUsersActived++
@@ -40,9 +41,31 @@ const MRRHandler = (data) => {
           user['data status']) : new Date(user['data status']),
         "|Padrão bruto:", user['data status'])
     }
+  }) */
+  
+
+  const activedUsers = data.filter(user => {  
+    if(user.status === 'Ativa'){
+      return user
+    }
   })
 
-  console.log("Total de usuários ativos:", totalUsersActived)
+  const usersWithDatePartner = activedUsers.map(user => {
+    if(typeof user['data status'] !== "string"){
+      user['data status'] = addDays(new Date(1899, 11, 30), user['data status'])
+    } else {
+      user['data status'] = new Date(user['data status'])
+    }
+
+    return user
+  })
+
+  const orderedUsersByDates = usersWithDatePartner.sort((user1, user2) => {
+    return new Date(user1['data status']) - new Date(user2['data status'])
+  })
+
+  /* console.log("Total de usuários ativos:", totalUsersActived) */
+  console.log("Usuários ordenados:", orderedUsersByDates)
 }
 
 module.exports = class UploadController {
