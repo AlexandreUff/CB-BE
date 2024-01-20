@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const xlsx = require('xlsx');
 const csv = require('csv-parser');
+const { addDays } = require('date-fns');
 
 // Configuração do multer para o armazenamento dos arquivos
 const storage = multer.diskStorage({
@@ -35,6 +36,23 @@ module.exports = class UploadController {
         // Aqui você pode fazer o tratamento dos dados, por exemplo, salvar no banco de dados ou manipular de alguma outra forma.
         console.log('Arquivo Excel enviado:', req.file.filename);
         //Const data é o retorno
+        /* console.log("DATA:", data) */
+
+        let totalUsersActived = 0
+
+        data.map((user, i) => {  
+          if(user.status === 'Ativa'){
+            totalUsersActived++
+            console.log(
+              "|Usueiro:",user['ID assinante'],
+              "|Valor:", user.valor, "|Data status:",
+              typeof user['data status'] !== "string" ? addDays(new Date(1899, 11, 30),
+                user['data status']) : user['data status'],
+              "|Padrão bruto:", user['data status'])
+          }
+        })
+
+        console.log("Total de usuários ativos:", totalUsersActived)
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
