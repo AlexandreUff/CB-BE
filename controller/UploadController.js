@@ -16,6 +16,35 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const sheetXLSXToJsonHandler = (filePath) => {
+  // Tratar arquivo Excel (.xlsx)
+  const workbook = xlsx.readFile(filePath);
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const data = xlsx.utils.sheet_to_json(sheet);
+  // Aqui você pode fazer o tratamento dos dados, por exemplo, salvar no banco de dados ou manipular de alguma outra forma.
+
+  return data
+}
+
+const MRRHandler = (data) => {
+  let totalUsersActived = 0
+
+  data.map((user, i) => {  
+    if(user.status === 'Ativa'){
+      totalUsersActived++
+      console.log(
+        "|Usueiro:",user['ID assinante'],
+        "|Valor:", user.valor, "|Data status:",
+        typeof user['data status'] !== "string" ? addDays(new Date(1899, 11, 30),
+          user['data status']) : new Date(user['data status']),
+        "|Padrão bruto:", user['data status'])
+    }
+  })
+
+  console.log("Total de usuários ativos:", totalUsersActived)
+}
+
 module.exports = class UploadController {
   static async createSheet(req, res) {
     if (!req.file) {
@@ -26,33 +55,10 @@ module.exports = class UploadController {
   
     // Verificar o tipo de arquivo e realizar o tratamento adequado
     if (path.extname(req.file.originalname).toLowerCase() === '.xlsx') {
-        // Tratar arquivo Excel (.xlsx)
 
-        // Tratar arquivo Excel (.xlsx)
-        const workbook = xlsx.readFile(filePath);
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const data = xlsx.utils.sheet_to_json(sheet);
-        // Aqui você pode fazer o tratamento dos dados, por exemplo, salvar no banco de dados ou manipular de alguma outra forma.
+        const data = sheetXLSXToJsonHandler(filePath)
+        MRRHandler(data)
         console.log('Arquivo Excel enviado:', req.file.filename);
-        //Const data é o retorno
-        /* console.log("DATA:", data) */
-
-        let totalUsersActived = 0
-
-        data.map((user, i) => {  
-          if(user.status === 'Ativa'){
-            totalUsersActived++
-            console.log(
-              "|Usueiro:",user['ID assinante'],
-              "|Valor:", user.valor, "|Data status:",
-              typeof user['data status'] !== "string" ? addDays(new Date(1899, 11, 30),
-                user['data status']) : user['data status'],
-              "|Padrão bruto:", user['data status'])
-          }
-        })
-
-        console.log("Total de usuários ativos:", totalUsersActived)
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
