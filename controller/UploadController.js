@@ -64,8 +64,46 @@ const MRRHandler = (data) => {
     return new Date(user1['data status']) - new Date(user2['data status'])
   })
 
+  let year = 0
+  let month = 0
+  let averageValuesPerMonth = []
+
+  orderedUsersByDates.forEach(user => {
+    if(user['data status'].getFullYear() === year) {
+      if(user['data status'].getMonth() === month){
+
+        const arrayIndex = averageValuesPerMonth.findIndex(period => {
+          return period.monthAndYear.getFullYear() === year && period.monthAndYear.getMonth() === month
+        })
+
+        averageValuesPerMonth[arrayIndex].averageValue = user.valor
+        /* Precisar pôr a média dos valores */
+
+      } else {
+        month = user['data status'].getMonth()
+
+        averageValuesPerMonth.push({
+          monthAndYear: new Date(year, month),
+          averageValue: user.valor
+        })
+      }
+      
+    } else {
+      year = user['data status'].getFullYear()
+      month = user['data status'].getMonth()
+
+      /* console.log("Pega ano/data:", user['data status'].getFullYear(), user['data status'].getMonth()) */
+
+      averageValuesPerMonth.push({
+        monthAndYear: new Date(year, month),
+        averageValue: user.valor
+      })
+    }
+  })
+
   /* console.log("Total de usuários ativos:", totalUsersActived) */
-  console.log("Usuários ordenados:", orderedUsersByDates)
+  /* console.log("Usuários ordenados:", orderedUsersByDates) */
+  console.log("Usuários em MRR", averageValuesPerMonth)
 }
 
 module.exports = class UploadController {
