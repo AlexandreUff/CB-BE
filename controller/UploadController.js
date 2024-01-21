@@ -52,11 +52,13 @@ const MRRHandler = (data) => {
 
   const usersWithDatePartner = activedUsers.map(user => {
     if(typeof user['data status'] !== "string"){
+      /* console.log("number") */
       user['data status'] = addDays(new Date(1899, 11, 30), user['data status'])
     } else {
       user['data status'] = new Date(user['data status'])
     }
 
+    /* console.log("Data:", user['data status'], "User:", user['ID assinante']) */
     return user
   })
 
@@ -67,19 +69,26 @@ const MRRHandler = (data) => {
   let year = 0
   let month = 0
   let averageValuesPerMonth = []
+  let arrayIndex = 0
+  let userAmount = 1
 
   orderedUsersByDates.forEach(user => {
     if(user['data status'].getFullYear() === year) {
       if(user['data status'].getMonth() === month){
 
-        const arrayIndex = averageValuesPerMonth.findIndex(period => {
+        arrayIndex = averageValuesPerMonth.findIndex(period => {
           return period.monthAndYear.getFullYear() === year && period.monthAndYear.getMonth() === month
         })
 
-        averageValuesPerMonth[arrayIndex].averageValue = user.valor
+        averageValuesPerMonth[arrayIndex].averageValue += user.valor
+        userAmount++
         /* Precisar pôr a média dos valores */
 
       } else {
+        if(arrayIndex-1 >= 0){
+          averageValuesPerMonth[arrayIndex-1].averageValue = averageValuesPerMonth[arrayIndex-1].averageValue / userAmount
+        }
+
         month = user['data status'].getMonth()
 
         averageValuesPerMonth.push({
@@ -89,6 +98,10 @@ const MRRHandler = (data) => {
       }
       
     } else {
+      if(arrayIndex-1 >= 0){
+        averageValuesPerMonth[arrayIndex-1].averageValue = averageValuesPerMonth[arrayIndex-1].averageValue / userAmount
+      }
+
       year = user['data status'].getFullYear()
       month = user['data status'].getMonth()
 
@@ -123,6 +136,8 @@ module.exports = class UploadController {
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
+        const data = sheetXLSXToJsonHandler(filePath)
+        MRRHandler(data)
         console.log('Arquivo CSV enviado:', req.file.filename);
     } else {
         return res.status(400).send('Formato de arquivo não suportado.');
