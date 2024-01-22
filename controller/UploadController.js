@@ -99,7 +99,7 @@ const MRRHandler = (data) => {
       
     } else {
       if(arrayIndex-1 >= 0){
-        averageValuesPerMonth[arrayIndex-1].averageValue = averageValuesPerMonth[arrayIndex-1].averageValue / userAmount
+        averageValuesPerMonth[arrayIndex-1].averageValue = (averageValuesPerMonth[arrayIndex-1].averageValue / userAmount).toFixed(2)
       }
 
       year = user['data status'].getFullYear()
@@ -117,6 +117,7 @@ const MRRHandler = (data) => {
   /* console.log("Total de usuários ativos:", totalUsersActived) */
   /* console.log("Usuários ordenados:", orderedUsersByDates) */
   console.log("Usuários em MRR", averageValuesPerMonth)
+  return averageValuesPerMonth
 }
 
 module.exports = class UploadController {
@@ -126,24 +127,25 @@ module.exports = class UploadController {
     }
 
     const filePath = req.file.path;
+    let dataHandled
   
     // Verificar o tipo de arquivo e realizar o tratamento adequado
     if (path.extname(req.file.originalname).toLowerCase() === '.xlsx') {
 
         const data = sheetXLSXToJsonHandler(filePath)
-        MRRHandler(data)
+        dataHandled = MRRHandler(data)
         console.log('Arquivo Excel enviado:', req.file.filename);
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
         const data = sheetXLSXToJsonHandler(filePath)
-        MRRHandler(data)
+        dataHandled = MRRHandler(data)
         console.log('Arquivo CSV enviado:', req.file.filename);
     } else {
         return res.status(400).send('Formato de arquivo não suportado.');
     }
   
-    return res.send('Arquivo enviado com sucesso!');
+    return res.send(dataHandled);
   }
 
   static upload = upload
