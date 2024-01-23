@@ -58,7 +58,7 @@ const ChurRateHandler = (data) => {
 
   let year = 0
   let month = 0
-  let averageValuesPerMonth = []
+  let desactivedUsersPerMonth = []
   let arrayIndex = 0
   let userAmount = 1 /* Talvez saia */
 
@@ -66,11 +66,11 @@ const ChurRateHandler = (data) => {
     if(user['data status'].getFullYear() === year) {
       if(user['data status'].getMonth() === month){
 
-        arrayIndex = averageValuesPerMonth.findIndex(period => {
+        arrayIndex = desactivedUsersPerMonth.findIndex(period => {
           return period.monthAndYear.getFullYear() === year && period.monthAndYear.getMonth() === month
         })
 
-        averageValuesPerMonth[arrayIndex].totalUsers++ /*  += +user.valor.toFixed(2) */
+        desactivedUsersPerMonth[arrayIndex].totalUsers++ /*  += +user.valor.toFixed(2) */
         userAmount++
         /* Precisar pôr a média dos valores */
 
@@ -81,7 +81,7 @@ const ChurRateHandler = (data) => {
 
         month = user['data status'].getMonth()
 
-        averageValuesPerMonth.push({
+        desactivedUsersPerMonth.push({
           monthAndYear: new Date(year, month),
           totalUsers: 1
         })
@@ -97,14 +97,15 @@ const ChurRateHandler = (data) => {
 
       /* console.log("Pega ano/data:", user['data status'].getFullYear(), user['data status'].getMonth()) */
 
-      averageValuesPerMonth.push({
+      desactivedUsersPerMonth.push({
         monthAndYear: new Date(year, month),
         totalUsers: 1
       })
     }
   })
 
-  console.log("Canceleiros:", averageValuesPerMonth)
+  console.log("Canceleiros:", desactivedUsersPerMonth)
+  return desactivedUsersPerMonth
   
 }
 
@@ -215,14 +216,32 @@ module.exports = class UploadController {
     if (path.extname(req.file.originalname).toLowerCase() === '.xlsx') {
 
         const data = sheetXLSXToJsonHandler(filePath)
-        dataHandled = MRRHandler(data)
-        ChurRateHandler(data)
+        dataHandled = [
+          {
+            name: "MRR",
+            data: MRRHandler(data),
+          },
+          {
+            name: "Churn Rate",
+            data: ChurRateHandler(data),
+          },
+        ] 
+        
         console.log('Arquivo Excel enviado:', req.file.filename);
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
         const data = sheetXLSXToJsonHandler(filePath)
-        dataHandled = MRRHandler(data)
+        dataHandled = [
+          {
+            name: "MRR",
+            data: MRRHandler(data),
+          },
+          {
+            name: "Churn Rate",
+            data: ChurRateHandler(data),
+          },
+        ] 
         console.log('Arquivo CSV enviado:', req.file.filename);
     } else {
         return res.status(400).send('Formato de arquivo não suportado.');
