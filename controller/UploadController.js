@@ -80,26 +80,26 @@ const MRRHandler = (data) => {
           return period.monthAndYear.getFullYear() === year && period.monthAndYear.getMonth() === month
         })
 
-        averageValuesPerMonth[arrayIndex].averageValue += user.valor
+        averageValuesPerMonth[arrayIndex].averageValue += +user.valor.toFixed(2)
         userAmount++
         /* Precisar pôr a média dos valores */
 
       } else {
         if(arrayIndex-1 >= 0){
-          averageValuesPerMonth[arrayIndex-1].averageValue = averageValuesPerMonth[arrayIndex-1].averageValue / userAmount
+          averageValuesPerMonth[arrayIndex-1].averageValue = +(averageValuesPerMonth[arrayIndex-1].averageValue / userAmount).toFixed(2)
         }
 
         month = user['data status'].getMonth()
 
         averageValuesPerMonth.push({
           monthAndYear: new Date(year, month),
-          averageValue: user.valor
+          averageValue: +user.valor.toFixed(2)
         })
       }
       
     } else {
       if(arrayIndex-1 >= 0){
-        averageValuesPerMonth[arrayIndex-1].averageValue = (averageValuesPerMonth[arrayIndex-1].averageValue / userAmount).toFixed(2)
+        averageValuesPerMonth[arrayIndex-1].averageValue = +(averageValuesPerMonth[arrayIndex-1].averageValue / userAmount).toFixed(2)
       }
 
       year = user['data status'].getFullYear()
@@ -109,7 +109,7 @@ const MRRHandler = (data) => {
 
       averageValuesPerMonth.push({
         monthAndYear: new Date(year, month),
-        averageValue: user.valor
+        averageValue: +user.valor.toFixed(2)
       })
     }
   })
