@@ -27,6 +27,87 @@ const sheetXLSXToJsonHandler = (filePath) => {
   return data
 }
 
+const usersDataHandler = (data) => {
+  const usersWithDatePartner = data.map(user => {
+    if(typeof user['data status'] !== "string"){
+      /* console.log("number") */
+      user['data status'] = addDays(new Date(1899, 11, 30), user['data status'])
+    } else {
+      user['data status'] = new Date(user['data status'])
+    }
+
+    /* console.log("Data:", user['data status'], "User:", user['ID assinante']) */
+    return user
+  })
+
+  const orderedUsersByDates = usersWithDatePartner.sort((user1, user2) => {
+    return new Date(user1['data status']) - new Date(user2['data status'])
+  })
+
+  return orderedUsersByDates
+}
+
+const ChurRateHandler = (data) => {
+  const desactivedUsers = data.filter(user => {  
+    if(user["data cancelamento"]){
+      return user
+    }
+  })
+
+  const usersHandled = usersDataHandler(desactivedUsers)
+
+  let year = 0
+  let month = 0
+  let averageValuesPerMonth = []
+  let arrayIndex = 0
+  let userAmount = 1 /* Talvez saia */
+
+  usersHandled.forEach(user => {
+    if(user['data status'].getFullYear() === year) {
+      if(user['data status'].getMonth() === month){
+
+        arrayIndex = averageValuesPerMonth.findIndex(period => {
+          return period.monthAndYear.getFullYear() === year && period.monthAndYear.getMonth() === month
+        })
+
+        averageValuesPerMonth[arrayIndex].totalUsers++ /*  += +user.valor.toFixed(2) */
+        userAmount++
+        /* Precisar pôr a média dos valores */
+
+      } else {
+        /* if(arrayIndex-1 >= 0){
+          averageValuesPerMonth[arrayIndex-1].totalUsers = +(averageValuesPerMonth[arrayIndex-1].totalUsers / userAmount).toFixed(2)
+        } */
+
+        month = user['data status'].getMonth()
+
+        averageValuesPerMonth.push({
+          monthAndYear: new Date(year, month),
+          totalUsers: 1
+        })
+      }
+      
+    } else {
+      /* if(arrayIndex-1 >= 0){
+        averageValuesPerMonth[arrayIndex-1].totalUsers = +(averageValuesPerMonth[arrayIndex-1].totalUsers / userAmount).toFixed(2)
+      } */
+
+      year = user['data status'].getFullYear()
+      month = user['data status'].getMonth()
+
+      /* console.log("Pega ano/data:", user['data status'].getFullYear(), user['data status'].getMonth()) */
+
+      averageValuesPerMonth.push({
+        monthAndYear: new Date(year, month),
+        totalUsers: 1
+      })
+    }
+  })
+
+  console.log("Canceleiros:", averageValuesPerMonth)
+  
+}
+
 const MRRHandler = (data) => {
   /* let totalUsersActived = 0
 
@@ -50,21 +131,22 @@ const MRRHandler = (data) => {
     }
   })
 
-  const usersWithDatePartner = activedUsers.map(user => {
+  /* const usersWithDatePartner = activedUsers.map(user => {
     if(typeof user['data status'] !== "string"){
-      /* console.log("number") */
+      
       user['data status'] = addDays(new Date(1899, 11, 30), user['data status'])
     } else {
       user['data status'] = new Date(user['data status'])
     }
 
-    /* console.log("Data:", user['data status'], "User:", user['ID assinante']) */
+    
     return user
   })
 
   const orderedUsersByDates = usersWithDatePartner.sort((user1, user2) => {
     return new Date(user1['data status']) - new Date(user2['data status'])
-  })
+  }) */
+  const usersHandled = usersDataHandler(activedUsers)
 
   let year = 0
   let month = 0
@@ -72,7 +154,7 @@ const MRRHandler = (data) => {
   let arrayIndex = 0
   let userAmount = 1
 
-  orderedUsersByDates.forEach(user => {
+  usersHandled.forEach(user => {
     if(user['data status'].getFullYear() === year) {
       if(user['data status'].getMonth() === month){
 
@@ -134,6 +216,7 @@ module.exports = class UploadController {
 
         const data = sheetXLSXToJsonHandler(filePath)
         dataHandled = MRRHandler(data)
+        ChurRateHandler(data)
         console.log('Arquivo Excel enviado:', req.file.filename);
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
