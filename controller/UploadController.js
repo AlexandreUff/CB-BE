@@ -218,12 +218,12 @@ module.exports = class UploadController {
         const data = sheetXLSXToJsonHandler(filePath)
         dataHandled = [
           {
-            name: "MRR",
-            data: MRRHandler(data),
-          },
-          {
             name: "Churn Rate",
             data: ChurRateHandler(data),
+          },
+          {
+            name: "MRR",
+            data: MRRHandler(data),
           },
         ] 
         
@@ -234,12 +234,12 @@ module.exports = class UploadController {
         const data = sheetXLSXToJsonHandler(filePath)
         dataHandled = [
           {
-            name: "MRR",
-            data: MRRHandler(data),
-          },
-          {
             name: "Churn Rate",
             data: ChurRateHandler(data),
+          },
+          {
+            name: "MRR",
+            data: MRRHandler(data),
           },
         ] 
         console.log('Arquivo CSV enviado:', req.file.filename);
