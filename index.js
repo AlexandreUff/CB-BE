@@ -13,28 +13,11 @@ server.use((req, res, next) => {
   next();
 });
 
-console.log("ENV:", process.env.URL_CLI_PROD)
-
-/* server.use(cors({
-  origin: "*",
-  methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-  allowedHeaders: 'Content-Type, Authorization',
-})); */
-
 server.use(cors())
 
 server.get('/', (req, res) => {
   res.send('Hello, Worlds!');
 });
-
-//read body
-/* server.use(
-    express.urlencoded({
-        extended: true
-    })
-);
-
-server.use(express.json()); */
 
 server.use('/upload', cors(), uploadRoutes)
 
