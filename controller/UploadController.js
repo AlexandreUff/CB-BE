@@ -4,7 +4,7 @@ const xlsx = require('xlsx');
 const csv = require('csv-parser');
 const { addDays } = require('date-fns');
 
-// Configuração do multer para o armazenamento dos arquivos
+/* // Configuração do multer para o armazenamento dos arquivos
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/'); // O diretório onde os arquivos serão armazenados
@@ -12,13 +12,14 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
-});
-
+}); */
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const sheetXLSXToJsonHandler = (filePath) => {
   // Tratar arquivo Excel (.xlsx)
-  const workbook = xlsx.readFile(filePath);
+  /* const workbook = xlsx.readFile(filePath); */
+  const workbook = xlsx.read(filePath, {type: 'buffer'})
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const data = xlsx.utils.sheet_to_json(sheet);
@@ -209,13 +210,14 @@ module.exports = class UploadController {
         return res.status(400).send('Nenhum arquivo enviado.');
     }
 
-    const filePath = req.file.path;
+    /* const filePath = req.file.path; */
+    const buffer = req.file.buffer;
     let dataHandled
   
     // Verificar o tipo de arquivo e realizar o tratamento adequado
     if (path.extname(req.file.originalname).toLowerCase() === '.xlsx') {
 
-        const data = sheetXLSXToJsonHandler(filePath)
+        const data = sheetXLSXToJsonHandler(buffer)
         dataHandled = [
           {
             name: "Churn Rate",
@@ -227,11 +229,12 @@ module.exports = class UploadController {
           },
         ] 
         
-        console.log('Arquivo Excel enviado:', req.file.filename);
+        /* console.log('Arquivo Excel enviado:', req.file.filename); */
+        console.log('Arquivo Excel enviado:', req.file.buffer);
 
     } else if (path.extname(req.file.originalname).toLowerCase() === '.csv') {
         // Tratar arquivo CSV
-        const data = sheetXLSXToJsonHandler(filePath)
+        const data = sheetXLSXToJsonHandler(buffer)
         dataHandled = [
           {
             name: "Churn Rate",
@@ -242,7 +245,8 @@ module.exports = class UploadController {
             data: MRRHandler(data),
           },
         ] 
-        console.log('Arquivo CSV enviado:', req.file.filename);
+        /* console.log('Arquivo CSV enviado:', req.file.filename); */
+        console.log('Arquivo CSV enviado:', req.file.buffer);
     } else {
         return res.status(400).send('Formato de arquivo não suportado.');
     }
