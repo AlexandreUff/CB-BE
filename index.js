@@ -21,7 +21,7 @@ const uploadRoutes = require('./routes/uploadRoutes')
 console.log("ENV:", process.env.URL_CLI_PROD)
 
 server.use(cors({
-  origin: process.env.URL_CLI_PROD || 'http://localhost:5173',
+  origin: /* process.env.URL_CLI_PROD || 'http://localhost:5173' */ "https://mystonks.vercel.app/",
   methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
   allowedHeaders: 'Content-Type, Authorization',
 }));
