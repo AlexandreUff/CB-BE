@@ -5,9 +5,9 @@ const port = 3000;
 const uploadRoutes = require('./routes/uploadRoutes')
 
 server.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your client-side origin
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Origin', `${process.env.URL_CLI_PROD}` || 'http://localhost:5173'); // Replace with your client-side origin
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // Allow preflight requests to succeed
   if (req.method === 'OPTIONS') {
