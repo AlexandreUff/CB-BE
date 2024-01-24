@@ -5,7 +5,7 @@ const port = 3000;
 
 const uploadRoutes = require('./routes/uploadRoutes')
 
-/* server.use((req, res, next) => {
+server.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', `${process.env.URL_CLI_PROD}` || 'http://localhost:5173');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -16,15 +16,15 @@ const uploadRoutes = require('./routes/uploadRoutes')
   } else {
     next();
   }
-}); */
+});
 
 console.log("ENV:", process.env.URL_CLI_PROD)
 
-server.use(cors({
-  origin: /* process.env.URL_CLI_PROD || 'http://localhost:5173' */ "*",
+/* server.use(cors({
+  origin: "*",
   methods: 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
   allowedHeaders: 'Content-Type, Authorization',
-}));
+})); */
 
 /* server.use(cors()) */
 
