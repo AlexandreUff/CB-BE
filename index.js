@@ -6,16 +6,11 @@ const port = 3000;
 const uploadRoutes = require('./routes/uploadRoutes')
 
 server.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', /* `${process.env.URL_CLI_PROD}` || 'http://localhost:5173' */ "https://mystonksheet.netlify.app/");
+  res.setHeader('Access-Control-Allow-Origin', `${process.env.URL_CLI_PROD}` || 'http://localhost:5173');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   next();
-  // Allow preflight requests to succeed
-  /* if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-  } */
 });
 
 console.log("ENV:", process.env.URL_CLI_PROD)
@@ -26,7 +21,7 @@ console.log("ENV:", process.env.URL_CLI_PROD)
   allowedHeaders: 'Content-Type, Authorization',
 })); */
 
-/* server.use(cors()) */
+server.use(cors())
 
 server.get('/', (req, res) => {
   res.send('Hello, Worlds!');
