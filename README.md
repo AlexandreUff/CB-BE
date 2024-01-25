@@ -34,7 +34,7 @@ Basicamente, ao ser iniciada, a aplicação já estará pronta para receber os d
 
 ### Versão de produção (Deploy) da aplicação
 
-[myStonks(API)](https://mystonks-api.vercel.app/)
+[myStonks(API)](https://mystonks-api.vercel.app/) (sugiro baixar este repositório)
 
 ### Contato
 [LinkedIn de Alexandre Magno](https://www.linkedin.com/in/alexandre-desenvolvedordesistemas/)
